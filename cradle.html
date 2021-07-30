@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href = "./styles/cradle.css">
+    <link rel="stylesheet" href="./styles/reset.css" >
+    <link rel="stylesheet" href="./styles/styl.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="./js/p5.min.js"></script>
+    <script src="./js/matter.js"></script>
+    <script src="./js/cradle.js"></script>
+    <script src="./js/cradleInput.js"></script>
+    <script src="./js/cradleFBD.js"></script>
+    <script src="./js/cradleGraphs.js"></script>
+    <title>Optical Diagnostics Group | MecE265</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="header_in">
+        <h1><a href="NOBES_MecE_265.html"><b>NOBES<br>SOLIDWORKS</b></a></h1>
+        <div id="menu">
+          <ul>
+            <li><a href="NOBES_MecE_265.html">MecE 265</a></li>
+            <li><a href="NOBES_MecE_468.html">MecE 468</a></li>
+            <li><a href="NOBES_CSWA.html">CSWA/CSWP</a></li>
+            <li><a href="NOBES_SIM.html" class="active">Simulations</a></li>
+            <li><a href="NOBES_SW_Tutorials.html">SW Tutorials</a></li>
+            <li><a href="NOBES_SW.html">Extra Resources</a></li>
+            <li><a href="NOBES_Quiz.html">Quiz</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="main_part_inner">
+      <div id="main_part_inner_in">
+        <h2>Newton's Cradle</h2> 
+      </div>
+    </div>
+    <noscript>
+      <style type="text/css">
+        #content_inner {display: none};
+      </style>
+      This page requires javascript to be enabled or a javascript able browser.
+    </noscript>
+    <div id="content_inner" style = "width:1120px">
+      <div id="sim-title">
+    </div>
+      <div id="simulation">
+        <div id="container" class="box-border"></div>
+        <div class="input-container">
+          <b>CONTROLS</b> <span class="dropdown" onclick="showMenu('control-content')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="dropdown-btn bi bi-question-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+            </svg>
+            <div id="control-content" class="dropdown-content">
+              <b>CONTROLS</b>
+              <div>
+              </div>
+            </div>
+          </span>
+          <div class="box-border" id="input">
+            <label for="grav">Gravity (<span id="e3">9.81</span>m/s<sup>2</sup>):</label><br>
+            <input class="slider" type="range" min="0" max="9.81" value="9.81" step="0.01" id="grav"><br>
+            <input type="number" min="0" max="9.81" value="9.81" step="0.01" id="grav"><br/>
+            <br>    
+            <label for="mass">Mass (<span id="e4">5</span>kg):</label><br/>
+            <div class="mass-select-container">
+                <label class="mass-select-toggle">
+                  <input type="radio" name="massSelect" value="1"> 1
+                </label>
+                <label class="mass-select-toggle">
+                  <input type="radio" name="massSelect" value="2"> 2
+                </label>
+                <label class="mass-select-toggle">
+                    <input type="radio" name="massSelect" value="3"> 3
+                </label>
+                <label class="mass-select-toggle">
+                    <input type="radio" name="massSelect" value="4"> 4
+                </label>
+                <label class="mass-select-toggle">
+                    <input type="radio" name="massSelect" value="5"> 5
+                </label>
+                <label class="mass-select-toggle mass-select-toggle-active">
+                  <input type="radio" name="massSelect" value="6" checked> All
+                </label>
+            </div>
+            <input class="slider" type="range" min="1" max="10" value="5" step="0.01" id="mass"><br/>
+            <input type="number" min="1" max="10" value="5" step="0.01" id="mass"><br/>
+            <br> 
+            <label for="coef">Coefficient of Restitution between Balls (<span id="e1">1</span>):</label><br>
+            <input class="slider" type="range" min="0" max="1" value="1" step="0.01" id="coef"><br>
+            <input type="number" min="0" max="1" value="1" step="0.05" id="coef"><br/>
+            <br>    
+            <label for="ang">Intial Angle (<span id="e2">45</span>°):</label><br/>
+            <input class="slider" type="range" min="0" max="90" value="45" step="0.1" id="ang"><br/>
+            <input type="number" min="0" max="90" value="45" step="0.1" id="ang"><br/>
+            <br>
+            <label for="mass">Actions:</label><br/>
+            <div class = "button-container">
+                <button class = "buttons" id="apply-button">Apply</button>
+                <button class = "buttons" id="reset-button">Reset</button>
+            </div>
+            <label for="graph">Variable to graph:</label><br/>
+            <div class="graph-select-container">
+                <label class="graph-select-toggle">
+                  <input type="radio" name="graphSelect" value="1"> Position
+                </label>
+                <label class="graph-select-toggle graph-select-toggle-active">
+                    <input type="radio" name="graphSelect" value="2" checked> Velocity
+                </label>
+                <label class="graph-select-toggle">
+                  <input type="radio" name="graphSelect" value="3"> Acceleration
+                </label>
+            </div>
+          </div>
+        </div>
+        <div class="output-container">
+          <b>OUTPUT</b> <span class="dropdown" onclick="showMenu('output-content')">
+            <svg xmlns="http://www.w3.org/2000/svg"  width="15" height="15" fill="currentColor" class="dropdown-btn bi bi-question-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+            </svg>
+            <div id="output-content" class="dropdown-content">
+              <b>Output</b><br>
+              
+            </div>
+            </span>
+            <div class="box-border" id="output">
+                Free Body Diagram of First Collision: <br><br>
+                <div id = "container1"></div>
+            </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="footer">
+      <div id="footer_in">
+        <p>Copyright © 2016 <a href="#">Optical Diagnostics Group</a>. All Rights Reserved</p>
+        <span>Design By: Bianca Angotti and Carmen Leung</span> <br>
+        <p></p>
+        <span>Simulation By: Pranj Patel and Logan Vaughan</span>
+      </div>
+    </div>     
+  </body>    
+</html>
