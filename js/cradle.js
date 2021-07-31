@@ -1,6 +1,5 @@
 /* TODO
 
-Create FBD of First Collision
 
 Show Calculations for first Collision
 
@@ -14,10 +13,6 @@ Video
 
 Graphs
 
-Scale Arrows
-
-Force Arrows
-Fix Text Position
 
 */
 
@@ -56,9 +51,9 @@ function setup(){
 
 function draw(){
     background(100);
-    noStroke();
-    fill(0);
-    rect(208,55,285,20);
+    plot.display();
+
+
     Engine.update(engine);
     newtsCradle.update();
     newtsCradle.show();
@@ -68,8 +63,8 @@ function draw(){
         angles.show();
     }
 
-    fill(255);
-    rect(700,0,300,400);
+    
+
     
 }
 
@@ -110,6 +105,11 @@ function resetSim(){
     projection = new Projection(236,275,464,275,60);
 
     angles = new Angles(230,73,460,73);
+
+    plot = new Plot(700,0,300,400);
+    plot.addLine(new Lines("Velocity", [255, 0, 0], 0));
+    plot.addLine(new Lines("Position", [0, 255, 0], 1));
+    plot.addLine(new Lines("Acceleration", [0, 0, 255], 2));
     Engine.run(engine);
 }
 
@@ -219,7 +219,11 @@ class Cradle {
     }
 
     show(){
-        
+        noStroke();
+        fill(100);
+        rect(0,0,700,400);
+        fill(0);
+        rect(208,55,285,20);
         for(var i = 0; i < this.number; i++){
             fill(0);
             noStroke();
@@ -315,5 +319,139 @@ class Angles {
         arc(464,75,30,30,HALF_PI-this.angle2*(PI/180),HALF_PI);
 
 
+    }
+}
+
+class Plot{
+    constructor( x, y, w, h){
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.max = 100;
+        this.lines = [];
+        this.pause = false;
+    }
+
+    update(){
+        let currentMax = 0;
+        for (let i = 0; i < this.lines.length; i++) {
+          let coordinates = this.lines[i];
+          coordinates.update();
+          for (let j = 0; j < coordinates.points.length; j++) {
+            currentMax = max([currentMax, abs(coordinates.points[j].y), 100]);
+          }
+        }
+        this.max = currentMax;
+    }
+
+    display(){
+        let point;
+        //Setup
+
+        fill(0);
+        noStroke();
+        rect(this.x, this.y, this.w, this.h);
+        stroke(255);
+        strokeWeight(2);
+        line(this.x, this.h/2, this.x + this.w, this.h/2);
+        fill(255);
+        line(this.x + this.w, this.h/2 - 71, this.x + this.w - 20, this.h/2 - 71);
+        line(this.x + this.w, this.h/2 + 71, this.x + this.w - 20, this.h/2 + 71);
+        noStroke();
+        text(this.max.toFixed(2).replace('-0', '0'), this.x + this.w - 50, this.h/2 - 75);
+        text(this.max.toFixed(2).replace('-0', '0'), this.x + this.w - 50, this.h/2 + 85);
+        if (!this.pause) {
+            this.update();
+        } else {
+            push();
+            fill([255, 0, 0]);
+            stroke([255, 0, 0]);
+            textSize(20);
+            text("PAUSED", 0, height);
+            pop();
+        }
+        //Draw Plot
+        for (let i = 0; i < this.lines.length; i++) {
+            let coordinates = this.lines[i];
+            beginShape();
+            noFill();
+            stroke(coordinates.color);
+            for (let j = 0; j < coordinates.points.length; j++) {
+            let point = coordinates.points[j];
+            vertex(point.x, -map(point.y, -this.max , this.max, -70, 70) + height/2);
+            }
+            endShape();
+        }
+        //Hover Text
+        push();
+        stroke([123,21,123,125]);
+        fill([123,21,123,125])
+        textSize(20);
+        //Find closest X TODO: Find closest Y
+        if (mouseX > this.x && mouseX < this.x + this.w && mouseY > 0 && mouseY < this.h) {
+            let point = (this.lines[0].points.reduce((previousPoint, currentPoint) => {
+            return (abs(currentPoint.x - mouseX) < abs(previousPoint.x - mouseX) ? currentPoint : previousPoint)
+            }));
+            let index = this.lines[0].points.indexOf(point);
+            let coordinates = (this.lines.reduce((previousLine, currentLine) => {
+                let previousPoint = map(previousLine.points[index].y, -this.max , this.max, -70, 70);
+                let currentPoint = map(currentLine.points[index].y, -this.max , this.max, -70, 70);
+            return (abs(currentPoint + mouseY - height/2) < abs(previousPoint + mouseY - height/2) ? currentLine : previousLine)
+            }));
+            line(this.x, -map(coordinates.points[index].y, -this.max , this.max, -70, 70) + this.h/2, this.x + this.w, -map(coordinates.points[index].y, -this.max , this.max, -70, 70) + this.h/2);
+            line(mouseX, 0, mouseX, height);
+            fill(coordinates.color);
+            stroke(coordinates.color);
+            text(`x: ${mouseX.toFixed(0).replace('-0', '0')} ${coordinates.name}: ${coordinates.points[index].y.toFixed(3).replace('-0', '0')}`, this.x + 10, 20);
+        }
+        pop();
+    }
+
+    addLine(coordinates) {
+        this.lines.push(coordinates);
+    }
+
+    pressed(){
+        if (this.pause === false) {
+            this.pause = true;
+          } else {
+              this.pause = false;
+              this.reset();
+          }
+    }
+
+    reset(){
+        for (let coordinates of this.lines) {
+            coordinates.points = [];
+        }
+    }
+}
+
+
+class Lines {
+    constructor(name, color, id, width=1000){
+        this.points = [];
+        this.name = name;
+        this.color = color;
+        this.width = width;
+        this.speed = 4;
+        this.vector = createVector(0,0);
+        // vectorcol.addListener(this.updateVector.bind(this), id);
+    }
+
+    updateVector(vector){
+        this.vector = vector;
+    }
+
+    update(){
+        this.points.push(createVector( this.width + this.speed, this.vector.y));
+        for (let i = 0; i < this.points.length; i++) {
+            let point = this.points[i];
+            point.x -= this.speed;
+            if (point.x < 0) {
+            this.points.shift();
+            }
+        }
     }
 }
