@@ -114,12 +114,12 @@ function resetSim(){
 
     vectorcol = new VectorCollection(3, [color(255,0,0),color(0,255,0),color(0,0,255)], "Velocity", "Position", "Acceleration");
 
-    plotx = new Plot(700,0,300,200);
+    plotx = new Plot(700,0,300,200,"x");
     plotx.addLine(new Lines("Velocity", [255, 0, 0], 0));
     plotx.addLine(new Lines("Position", [0, 255, 0], 1));
     plotx.addLine(new Lines("Acceleration", [0, 0, 255], 2));
    
-    ploty = new Plot(700,200,300,200);
+    ploty = new Plot(700,200,300,200,"y");
     ploty.addLine(new Lines("Velocity", [255, 0, 0], 0));
     ploty.addLine(new Lines("Position", [0, 255, 0], 1));
     ploty.addLine(new Lines("Acceleration", [0, 0, 255], 2));
@@ -337,7 +337,7 @@ class Angles {
 }
 
 class Plot{
-    constructor( x, y, w, h){
+    constructor( x, y, w, h,type){
         this.x = x;
         this.y = y;
         this.w = w;
@@ -345,6 +345,7 @@ class Plot{
         this.max = 100;
         this.lines = [];
         this.pause = false;
+        this.type = type;
     }
 
     update(){
@@ -400,6 +401,10 @@ class Plot{
         }
         //Hover Text
         push();
+        fill(255);
+        noStroke();
+        textSize(20);
+        text(`${this.type} direction`,this.x + 10, this.y + 20);
         stroke([123,21,123,125]);
         fill([123,21,123,125])
         textSize(20);
